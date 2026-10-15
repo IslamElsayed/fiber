@@ -123,6 +123,11 @@ type responseCacheControl struct {
 	proxyRevalidate bool
 }
 
+// saysNotToKeep reports whether the response says not to keep it: no-store, private, no-cache or Vary: *.
+func (cc responseCacheControl) saysNotToKeep(varyHasStar bool) bool { //nolint:revive // flag-parameter: a property of the response, not a mode of operation
+	return cc.hasNoStore || cc.hasPrivate || cc.hasNoCache || varyHasStar
+}
+
 func parseResponseCacheControl(cc []byte) responseCacheControl {
 	parsed := responseCacheControl{}
 	parseCacheControlDirectives(cc, func(key, value []byte) {
